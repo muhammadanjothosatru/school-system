@@ -1,0 +1,183 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  GURU
+  SISWA
+  ORTU
+}
+
+enum SchoolType {
+  SD
+  SMP
+  SMA
+}
+
+enum TeachingRole {
+  WALI_KELAS
+  GURU_MAPEL
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role
+  createdAt DateTime @default(now())
+
+  student Student?
+  teacher Teacher?
+}
+
+model Student {
+  id         String     @id @default(uuid())
+  userId     String     @unique
+  nis        String
+  classId    String
+  schoolType SchoolType
+
+  user  User  @relation(fields: [userId], references: [id])
+  class Class @relation(fields: [classId], references: [id])
+
+  attendances Attendance[]
+  grades      Grade[]
+  reports     Report[]
+  answers     Answer[] // ➕ TAMBAHKAN INI
+}
+
+model Teacher {
+  id     String @id @default(uuid())
+  userId String @unique
+
+  user User @relation(fields: [userId], references: [id])
+
+  teachings TeachingAssignment[]
+  schedules Schedule[]
+}
+
+model Class {
+  id         String     @id @default(uuid())
+  name       String
+  grade      Int
+  schoolType SchoolType
+
+  students  Student[]
+  schedules Schedule[]
+  teachings TeachingAssignment[]
+}
+
+model Subject {
+  id         String     @id @default(uuid())
+  name       String
+  schoolType SchoolType
+
+  teachings TeachingAssignment[]
+  schedules Schedule[]
+  grades    Grade[]
+}
+
+model TeachingAssignment {
+  id        String       @id @default(uuid())
+  teacherId String
+  classId   String
+  subjectId String?
+  role      TeachingRole
+
+  teacher Teacher  @relation(fields: [teacherId], references: [id])
+  class   Class    @relation(fields: [classId], references: [id])
+  subject Subject? @relation(fields: [subjectId], references: [id])
+}
+
+model Schedule {
+  id        String  @id @default(uuid())
+  classId   String
+  teacherId String
+  subjectId String?
+  day       String
+  startTime String
+  endTime   String
+
+  class   Class    @relation(fields: [classId], references: [id])
+  teacher Teacher  @relation(fields: [teacherId], references: [id])
+  subject Subject? @relation(fields: [subjectId], references: [id])
+}
+
+model Attendance {
+  id        String   @id @default(uuid())
+  studentId String
+  date      DateTime
+  status    String
+
+  student Student @relation(fields: [studentId], references: [id])
+}
+
+model Grade {
+  id        String @id @default(uuid())
+  studentId String
+  subjectId String
+  score     Float
+  semester  Int
+
+  student Student @relation(fields: [studentId], references: [id])
+  subject Subject @relation(fields: [subjectId], references: [id])
+}
+
+model Report {
+  id          String  @id @default(uuid())
+  studentId   String
+  semester    Int
+  totalScore  Float
+  description String?
+
+  student Student @relation(fields: [studentId], references: [id])
+}
+
+model Exam {
+  id        String   @id @default(uuid())
+  title     String
+  classId   String
+  subjectId String?
+  startTime DateTime
+  endTime   DateTime
+
+  questions Question[]
+}
+
+model Question {
+  id      String @id @default(uuid())
+  examId  String
+  type    String
+  content String
+
+  exam    Exam     @relation(fields: [examId], references: [id])
+  options Option[]
+  answers Answer[]
+}
+
+model Option {
+  id         String  @id @default(uuid())
+  questionId String
+  text       String
+  isCorrect  Boolean
+
+  question Question @relation(fields: [questionId], references: [id])
+}
+
+model Answer {
+  id         String  @id @default(uuid())
+  studentId  String
+  questionId String
+  answerText String?
+  optionId   String?
+  score      Float?
+
+  student  Student  @relation(fields: [studentId], references: [id])
+  question Question @relation(fields: [questionId], references: [id])
+}
