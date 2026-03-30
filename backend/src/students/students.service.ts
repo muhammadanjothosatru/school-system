@@ -1,18 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateStudentDto } from './dto/create-student.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class StudentsService {
     constructor(private prisma: PrismaService) { }
 
     async create(data: CreateStudentDto) {
+        const hashedPassword = await bcrypt.hash(data.password, 10);
+
         return this.prisma.user.create({
             data: {
                 name: data.name,
                 email: data.email,
-                password: data.password,
-                role: 'SISWA',
+                password: hashedPassword,
+                role: 'ADMIN',
 
                 student: {
                     create: {
@@ -29,11 +32,51 @@ export class StudentsService {
     }
 
     findAll() {
-        return this.prisma.student.findMany({
+        return this.prisma.student.findMany();
+    }
+
+    async createClass() {
+        return this.prisma.class.create({
+            data: {
+                name: '7A',
+                grade: 7,
+                schoolType: 'SMP',
+            },
+        });
+    }
+
+    findOne(id: string) {
+        return this.prisma.student.findUnique({
+            where: { id },
             include: {
                 user: true,
                 class: true,
             },
+        });
+    }
+
+    async update(id: string, data: any) {
+        return this.prisma.student.update({
+            where: { id },
+            data: {
+                nis: data.nis,
+                classId: data.classId,
+                user: {
+                    update: {
+                        name: data.name,
+                        email: data.email,
+                    },
+                },
+            },
+            include: {
+                user: true,
+            },
+        });
+    }
+
+    async remove(id: string) {
+        return this.prisma.student.delete({
+            where: { id },
         });
     }
 }

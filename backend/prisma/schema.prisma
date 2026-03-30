@@ -25,7 +25,7 @@ enum TeachingRole {
 }
 
 model User {
-  id        String   @id @default(uuid())
+  id        String   @id @default(dbgenerated("gen_random_uuid()"))
   name      String
   email     String   @unique
   password  String
@@ -37,7 +37,7 @@ model User {
 }
 
 model Student {
-  id         String     @id @default(uuid())
+  id         String     @id @default(dbgenerated("gen_random_uuid()"))
   userId     String     @unique
   nis        String
   classId    String
@@ -53,7 +53,7 @@ model Student {
 }
 
 model Teacher {
-  id     String @id @default(uuid())
+  id     String @id @default(dbgenerated("gen_random_uuid()"))
   userId String @unique
 
   user User @relation(fields: [userId], references: [id])
@@ -63,7 +63,7 @@ model Teacher {
 }
 
 model Class {
-  id         String     @id @default(uuid())
+  id         String     @id @default(dbgenerated("gen_random_uuid()"))
   name       String
   grade      Int
   schoolType SchoolType
@@ -74,7 +74,7 @@ model Class {
 }
 
 model Subject {
-  id         String     @id @default(uuid())
+  id         String     @id @default(dbgenerated("gen_random_uuid()"))
   name       String
   schoolType SchoolType
 
@@ -84,7 +84,7 @@ model Subject {
 }
 
 model TeachingAssignment {
-  id        String       @id @default(uuid())
+  id        String       @id @default(dbgenerated("gen_random_uuid()"))
   teacherId String
   classId   String
   subjectId String?
@@ -96,7 +96,7 @@ model TeachingAssignment {
 }
 
 model Schedule {
-  id        String  @id @default(uuid())
+  id        String  @id @default(dbgenerated("gen_random_uuid()"))
   classId   String
   teacherId String
   subjectId String?
@@ -110,7 +110,7 @@ model Schedule {
 }
 
 model Attendance {
-  id        String   @id @default(uuid())
+  id        String   @id @default(dbgenerated("gen_random_uuid()"))
   studentId String
   date      DateTime
   status    String
@@ -119,7 +119,7 @@ model Attendance {
 }
 
 model Grade {
-  id        String @id @default(uuid())
+  id        String @id @default(dbgenerated("gen_random_uuid()"))
   studentId String
   subjectId String
   score     Float
@@ -130,7 +130,7 @@ model Grade {
 }
 
 model Report {
-  id          String  @id @default(uuid())
+  id          String  @id @default(dbgenerated("gen_random_uuid()"))
   studentId   String
   semester    Int
   totalScore  Float
@@ -140,7 +140,7 @@ model Report {
 }
 
 model Exam {
-  id        String   @id @default(uuid())
+  id        String   @id @default(dbgenerated("gen_random_uuid()"))
   title     String
   classId   String
   subjectId String?
@@ -151,7 +151,7 @@ model Exam {
 }
 
 model Question {
-  id      String @id @default(uuid())
+  id      String @id @default(dbgenerated("gen_random_uuid()"))
   examId  String
   type    String
   content String
@@ -162,7 +162,7 @@ model Question {
 }
 
 model Option {
-  id         String  @id @default(uuid())
+  id         String  @id @default(dbgenerated("gen_random_uuid()"))
   questionId String
   text       String
   isCorrect  Boolean
@@ -171,7 +171,7 @@ model Option {
 }
 
 model Answer {
-  id         String  @id @default(uuid())
+  id         String  @id @default(dbgenerated("gen_random_uuid()"))
   studentId  String
   questionId String
   answerText String?
