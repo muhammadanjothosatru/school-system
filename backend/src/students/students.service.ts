@@ -59,12 +59,12 @@ export class StudentsService {
         return this.prisma.student.update({
             where: { id },
             data: {
-                nis: data.nis,
-                classId: data.classId,
+                ...(data.nis && { nis: data.nis }),
+                ...(data.classId && { classId: data.classId }),
                 user: {
                     update: {
-                        name: data.name,
-                        email: data.email,
+                        ...(data.name && { name: data.name }),
+                        ...(data.email && { email: data.email }),
                     },
                 },
             },
