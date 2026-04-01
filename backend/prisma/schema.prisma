@@ -109,11 +109,17 @@ model Schedule {
   subject Subject? @relation(fields: [subjectId], references: [id])
 }
 
+enum AttendanceStatus {
+  HADIR
+  IZIN
+  ALPHA
+}
+
 model Attendance {
-  id        String   @id @default(dbgenerated("gen_random_uuid()"))
+  id        String           @id @default(dbgenerated("gen_random_uuid()"))
   studentId String
   date      DateTime
-  status    String
+  status    AttendanceStatus
 
   student Student @relation(fields: [studentId], references: [id])
 }
